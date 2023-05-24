@@ -1,25 +1,77 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import styled from "styled-components";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { ToastContainer, toast } from "react-toastify";
 import Logo from "../assets/logo.svg";
+import "react-toastify/dist/ReactToastify.css";
+import axios from "axios";
+import { registerRoute } from "../utils/ApIRouters";
 const Registers = () => {
+  const navigate = useNavigate();
   const [value, setValue] = useState({
     username: "",
     email: "",
     password: "",
     confirmPassword: "",
   });
+  const toastOptions = {
+    position: "bottom-right",
+    autoClose: 8000,
+    pauseOnHover: true,
+    draggable: true,
+    theme: "dark",
+  };
+  useEffect(()=>{
+    if(localStorage.getItem('chat-app-user')){
+      navigate('/')
+    }
+    },[])
   const handleChange = (e) => {
     setValue({ ...value, [e.target.name]: e.target.value });
-    console.log(value);
   };
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    if (handleValidation()) {
+      console.log("Submit");
+      const { username, email, password } = value;
+      const { data } = await axios.post(registerRoute, {
+        username,
+        email,
+        password,
+      });
+      if (data.status === false) {
+        toast.error(data.msg, toastOptions);
+      }
+      if (data.status === true) {
+        console.log(data)
+        localStorage.setItem("chat-app-user",JSON.stringify(data.user));
+        console.log("register success");
+        navigate("/");
+      }
+    }
+  };
+
+  const handleValidation = () => {
+    const { username, email, password, confirmPassword } = value;
+    if (password !== confirmPassword) {
+      toast.error("Password and confirem password should be same",toastOptions);
+      return false;
+    } else if (username.length < 3) {
+      toast.error("Username should be greater than 3 characters", toastOptions);
+      return false;
+    } else if (password.length < 8) {
+      toast.error("Password should be equal or greater than 8 characters",toastOptions);
+      return false;
+    } else if (email === "") {
+      toast.error("email is required", toastOptions);
+      return false;
+    }
+    return true;
   };
   return (
     <>
       <FormContainer>
-        <form action="" onSubmit={(event) => handleSubmit(event)}>
+        <form onSubmit={(event) => handleSubmit(event)}>
           <div className="brand">
             <img src={Logo} alt="logo" />
             <h1>snappy</h1>
@@ -54,6 +106,7 @@ const Registers = () => {
           </span>
         </form>
       </FormContainer>
+      <ToastContainer />
     </>
   );
 };

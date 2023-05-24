@@ -1,15 +1,17 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Chat from "./pages/Chat";
 import Login from "./pages/Login";
-import Registers from "./pages/Registers";
+import Register from "./pages/Registers";
+import SetAvatar from "./pages/SetAvatar";
 const App=()=>{
   return (
     <div className="App">
       <Router>
         <Routes>
-          <Route element={<Chat />} path="/chat" />
+          <Route element={<Chat />} path="/" />
           <Route element={<Login />} path="/login" />
-          <Route element={<Registers/>} path="/registers" />
+          <Route element={<Register/>} path="/register" />
+          <Route element={<SetAvatar/>} path="/setAvatar" />
         </Routes>
       </Router>
     </div>
