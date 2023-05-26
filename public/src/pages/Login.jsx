@@ -23,7 +23,7 @@ const Login = () => {
   if(localStorage.getItem('chat-app-user')){
     navigate('/')
   }
-  },[])
+  })
   const handleChange = (e) => {
     setValue({ ...value, [e.target.name]: e.target.value });
   };
@@ -37,6 +37,7 @@ const Login = () => {
         password,
       });
       console.log(data);
+      
       if (data.status === false) {
         toast.error(data.msg, toastOptions);
       }
