@@ -29,23 +29,27 @@ const Login = () => {
   };
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (handleValidation()) {
-      console.log(value);
-      const { username,password } = value;
-      const { data } = await axios.post(loginRoute, {
-        username,
-        password,
-      });
-      console.log(data);
-      
-      if (data.status === false) {
-        toast.error(data.msg, toastOptions);
+    try {
+      if (handleValidation()) {
+        console.log(value);
+        const { username,password } = value;
+        const { data } = await axios.post(loginRoute, {
+          username,
+          password,
+        });
+        console.log(data);
+        
+        if (data.status === false) {
+          toast.error(data.msg, toastOptions);
+        }
+        if (data.status === true) {
+          localStorage.setItem("chat-app-user",JSON.stringify(data.user));
+          console.log("login success");
+          navigate("/");
+        }
       }
-      if (data.status === true) {
-        localStorage.setItem("chat-app-user",JSON.stringify(data.user));
-        console.log("login success");
-        navigate("/");
-      }
+    } catch (error) {
+      console.log(error)
     }
   };
 
