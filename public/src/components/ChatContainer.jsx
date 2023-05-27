@@ -4,9 +4,9 @@ import Logout from "./Logout";
 import ChatInput from "./ChatInput";
 import axios from "axios";
 import { getAllMessage, sendMessagesRoute } from "../utils/ApIRouters";
-const ChatContainer = ({ currentChat, currentUser,socket }) => {
+const ChatContainer = ({ currentChat, currentUser, socket }) => {
   const [allMessages, setAllMessages] = useState([]);
-const scrollRef=useRef()
+  const scrollRef = useRef();
   const handleSendMsg = async (msg) => {
     setAllMessages([...allMessages, { fromSelf: true, message: msg }]);
     axios
@@ -16,28 +16,16 @@ const scrollRef=useRef()
         message: msg,
       })
       .catch((err) => console.log(err));
-      socket.current.emit("send-msg",{
-        from: currentUser._id,
-        to: currentChat._id,
-        message: msg,
-      })
+    socket.current.emit("send-msg", {
+      from: currentUser._id,
+      to: currentChat._id,
+      message: msg,
+    });
   };
-  useEffect(()=>{
-    if(socket.current){
-   
-      socket.current.on("msg-recieve",data=>{
-        console.log(data)
-        if(data.to===currentUser._id){
-          setAllMessages([...allMessages, { fromSelf: false, message: data.message }]);
-        }
-       
-        
-      })
-    }
-  },[socket,allMessages])
-  useEffect(()=>{
- scrollRef.current?.scrollIntoView({behaviou:"smooth"})
-  },[allMessages])
+
+  useEffect(() => {
+    scrollRef.current?.scrollIntoView({ behaviou: "smooth" });
+  }, [allMessages]);
   useEffect(() => {
     const getAllMessages = async () => {
       axios
@@ -51,7 +39,18 @@ const scrollRef=useRef()
         );
     };
     getAllMessages();
-  }, [currentChat, currentUser]);
+  }, [currentChat,currentUser._id]);
+
+  useEffect(() => {
+    if (socket.current) {
+      socket.current.on("msg-recieve", (data) => {
+        setAllMessages([
+          ...allMessages,
+          { fromSelf: false, message: data.message },
+        ]);
+      });
+    }
+  }, [currentChat, allMessages,socket]);
   return (
     <>
       <Container>
@@ -78,52 +77,55 @@ const scrollRef=useRef()
                     message.fromSelf === true ? "sended" : "recieved"
                   }`}
                 >
-                  {
-                    message.fromSelf?(<><div className="content ">
-                    <p>{message.message}</p>
-                  </div>
-                  <div className="chat-header">
-                    <div className="user-details">
-                      <div className="avatar">
-                        {message.fromSelf ? (
-                          <img
-                            style={{ marginRight: 0 }}
-                            src={`data:image/svg+xml;base64,${currentUser.avatarImage}`}
-                            alt=""
-                          />
-                        ) : (
-                          <img
-                            src={`data:image/svg+xml;base64,${currentChat.avatarImage}`}
-                            alt=""
-                          />
-                        )}
+                  {message.fromSelf ? (
+                    <>
+                      <div className="content ">
+                        <p>{message.message}</p>
                       </div>
-                    </div>
-                  </div></>):(<>
-                    <div className="chat-header">
-                    <div className="user-details">
-                      <div className="avatar">
-                        {message.fromSelf ? (
-                          <img
-                            style={{ marginRight: 0 }}
-                            src={`data:image/svg+xml;base64,${currentUser.avatarImage}`}
-                            alt=""
-                          />
-                        ) : (
-                          <img
-                            src={`data:image/svg+xml;base64,${currentChat.avatarImage}`}
-                            alt=""
-                          />
-                        )}
+                      <div className="chat-header">
+                        <div className="user-details">
+                          <div className="avatar">
+                            {message.fromSelf ? (
+                              <img
+                                style={{ marginRight: 0 }}
+                                src={`data:image/svg+xml;base64,${currentUser.avatarImage}`}
+                                alt=""
+                              />
+                            ) : (
+                              <img
+                                src={`data:image/svg+xml;base64,${currentChat.avatarImage}`}
+                                alt=""
+                              />
+                            )}
+                          </div>
+                        </div>
                       </div>
-                    </div>
-                  </div>
-                    <div className="content ">
-                    <p>{message.message}</p>
-                  </div>
-                  </>)
-                  }
-                 
+                    </>
+                  ) : (
+                    <>
+                      <div className="chat-header">
+                        <div className="user-details">
+                          <div className="avatar">
+                            {message.fromSelf ? (
+                              <img
+                                style={{ marginRight: 0 }}
+                                src={`data:image/svg+xml;base64,${currentUser.avatarImage}`}
+                                alt=""
+                              />
+                            ) : (
+                              <img
+                                src={`data:image/svg+xml;base64,${currentChat.avatarImage}`}
+                                alt=""
+                              />
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                      <div className="content ">
+                        <p>{message.message}</p>
+                      </div>
+                    </>
+                  )}
                 </div>
               </div>
             );

@@ -3,7 +3,7 @@ const cors = require("cors");
 const socket=require('socket.io')
 const mongoose = require("mongoose");
 const userRoutes= require("./routes/userRoutes");
-const messagesRoutes= require("./routes/messagesRoute");
+const messagesRoutes= require("./routes/messagesRoute");  
 const app = express();
 require("dotenv").config(); //读取配置文件
 app.use(cors()); //处理跨域请求
@@ -29,18 +29,18 @@ const io=socket(server,{
     Credential:true
   }
 })
-global.onlineUsers=new Map()
-io.on('connection',socket=>{
-   console.log("有个帅哥连上了")
-   global.chatSocket=socket;
-   socket.on('add-user',userId=>{
-    onlineUsers.set(userId,socket.id)
-   })
 
-   socket.on('send-msg',data=>{
-    const  sendUserSocket=onlineUsers.get(data.to)
-    if(sendUserSocket){
-      socket.to(sendUserSocket).emit("msg-recieve",data)
+global.onlineUsers = new Map();
+io.on("connection", (socket) => {
+  global.chatSocket = socket;
+  socket.on("add-user", (userId) => {
+    onlineUsers.set(userId, socket.id);
+  });
+
+  socket.on("send-msg", (data) => {
+    const sendUserSocket = onlineUsers.get(data.to);
+    if (sendUserSocket) {
+      socket.to(sendUserSocket).emit("msg-recieve", data);
     }
-   })
+  });
 })

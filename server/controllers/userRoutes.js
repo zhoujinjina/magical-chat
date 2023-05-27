@@ -1,5 +1,7 @@
 const UserModel = require("../model/useModel");
 const brcypt = require("bcrypt");
+const jwt = require('jsonwebtoken')
+require("dotenv").config(); //读取配置文件
 module.exports.register = async (req, res, next) => {
   try {
     const { username, password, email } = req.body;
@@ -40,7 +42,12 @@ module.exports.login = async (req, res, next) => {
       //brcypt比较一定要没有加密的在前
       const isPassword = await brcypt.compare(password, usernameCheck.password);
       if (isPassword) {
-        console.log("jinlaile");
+        // const token = jwt.sign({ username }, process.env.JWT_SECRET);
+        // res.cookie('token', "f456465", {
+        //   httpOnly: true,
+        //   maxAge: 60 * 60 * 1000, // 1小时
+        // });
+        // console.log(res.cookie)
         return res.json({
           status: true,
           user: usernameCheck,
