@@ -34,7 +34,7 @@ const Chat = () => {
     const loadContacts = async () => {
       const { data } = await axios.get(`${allUserRoute}/${currentUser._id}`);
       setContacts(data);
-      console.log(data);
+      // console.log(data);
     };
     if (currentUser) {
       if (currentUser.isAvatarImageSet) {
@@ -43,8 +43,9 @@ const Chat = () => {
         navigate("/setAvatar");
       }
     }
-  }, [currentUser, navigate]);
+  }, [currentUser,navigate]);
   const handleChatChange = (chat) => {
+    socket.current.off("msg-recieve")
     setCurrentChat(chat);
   };
   return (

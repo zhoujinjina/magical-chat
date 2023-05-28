@@ -39,17 +39,24 @@ const ChatContainer = ({ currentChat, currentUser, socket }) => {
         );
     };
     getAllMessages();
-  }, [currentChat,currentUser._id]);
+    // console.log("66")
+  }, [currentChat,currentUser._id,socket]);
 
   useEffect(() => {
+
     if (socket.current) {
       socket.current.on("msg-recieve", (data) => {
-        setAllMessages([
-          ...allMessages,
-          { fromSelf: false, message: data.message },
-        ]);
+        if(data.from!==currentChat._id) {return}
+        else{
+          setAllMessages([
+            ...allMessages,
+            { fromSelf: false, message: data.message },
+          ]);
+        }
+        
       });
     }
+    // console.log("88")
   }, [currentChat, allMessages,socket]);
   return (
     <>
