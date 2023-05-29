@@ -29,6 +29,9 @@ cnpm install
 - **Run：**
 
 ```text
+cd public 
+npm start
+cd server
 npm start
 
 
