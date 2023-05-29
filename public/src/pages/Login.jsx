@@ -44,6 +44,7 @@ const Login = () => {
         }
         if (data.status === true) {
           localStorage.setItem("chat-app-user",JSON.stringify(data.user));
+          
           console.log("login success");
           navigate("/");
         }

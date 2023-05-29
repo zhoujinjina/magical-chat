@@ -42,12 +42,11 @@ module.exports.login = async (req, res, next) => {
       //brcypt比较一定要没有加密的在前
       const isPassword = await brcypt.compare(password, usernameCheck.password);
       if (isPassword) {
-        // const token = jwt.sign({ username }, process.env.JWT_SECRET);
-        // res.cookie('token', "f456465", {
-        //   httpOnly: true,
-        //   maxAge: 60 * 60 * 1000, // 1小时
-        // });
-        // console.log(res.cookie)
+        const token = jwt.sign({ username }, process.env.JWT_SECRET);
+        res.cookie('token', token, {
+          httpOnly: true,
+          maxAge: 60 * 60 * 1000, // 1小时
+        });
         return res.json({
           status: true,
           user: usernameCheck,

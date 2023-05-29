@@ -26,7 +26,7 @@ const Chat = () => {
   }, [navigate]);
   useEffect(() => {
     if (currentUser) {
-      socket.current=io(host)
+      socket.current=io(host)//使连接到服务端127.0.0.1:5000
       socket.current.emit("add-user",currentUser._id)
     }
   }, [currentUser]);

@@ -45,6 +45,7 @@ const ChatContainer = ({ currentChat, currentUser, socket }) => {
   useEffect(() => {
 
     if (socket.current) {
+      //判断是否来自目前聊天的用户，要是非正在聊天的用户发的 则不更新聊天记录
       socket.current.on("msg-recieve", (data) => {
         if(data.from!==currentChat._id) {return}
         else{
