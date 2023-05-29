@@ -12,5 +12,23 @@ React+MongoDB+JWT+Socket.io+styled-components+emoji-pick-react即时通讯全栈
 # 聊天页面
 ![image](https://github.com/zhoujinjina/magical-chat/assets/100776914/e8d1dc46-915b-4da1-ab8a-ed2c2c3bb2fa)
 ![image](https://github.com/zhoujinjina/magical-chat/assets/100776914/9ace538d-9454-41b7-8697-b51431e831fd)
+- **Clone：**
+
+```text
+# GitHub
+git clone https://github.com/zhoujinjina/magical-chat.git
+```
+
+- **Install：**
+
+```text
+npm install
+cnpm install
+```
+
+- **Run：**
+
+```text
+npm start
 
 
