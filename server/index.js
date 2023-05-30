@@ -7,7 +7,7 @@ const messagesRoutes = require("./routes/messagesRoute");
 const app = express();
 require("dotenv").config(); //读取配置文件
 app.use(cors()); //处理跨域请求
-app.use(express.json()); //自动解析请求体中的 SON数据，并将其转换为 JavaScript 对象,保存在 req.body 属性
+app.use(express.json()); //自动解析请求体中的 JSON数据，并将其转换为 JavaScript 对象,保存在 req.body 属性
 app.use("/api/auth", userRoutes);
 app.use("/api/messages", messagesRoutes);
 mongoose
