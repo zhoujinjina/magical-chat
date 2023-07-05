@@ -46,24 +46,24 @@ const SetAvatar = () => {
     loadAvatar();
   }, []);
 const setProfilePicture=async()=>{
-   if(selectedAvatar===undefined){
+ try {
+  if(selectedAvatar===undefined){
     toast.error('Please select your profile picture',toastOptions)
    }else{
     const user=await JSON.parse(localStorage.getItem('chat-app-user'))
     const {data} = await axios.post(`${setAvatarRoute}/${user._id}`,{
       image:avatars[selectedAvatar]
     })
-    console.log(data)
     if(data.isSet){
       user.isAvatarImageSet=true
       user.avatarImage=data.image
       localStorage.setItem('chat-app-user',JSON.stringify(user))
       navigate('/')
-    }else {
-      toast.error('Error setting avatar,Please try again',toastOptions)
     }
-
    }
+ } catch (error) {
+  console.log(error.message)
+ }
    
 }
   return (

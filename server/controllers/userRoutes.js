@@ -19,7 +19,7 @@ module.exports.register = async (req, res, next) => {
         status: false,
       });
     }
-    const hashedPassword = await brcypt.hash(password, 10);
+    const hashedPassword = await brcypt.hash(password, 10);//加密
     UserModel.create({
       username,
       email,
@@ -43,13 +43,10 @@ module.exports.login = async (req, res, next) => {
       const isPassword = await brcypt.compare(password, usernameCheck.password);
       if (isPassword) {
         const token = jwt.sign({ username }, process.env.JWT_SECRET);
-        res.cookie('token', token, {
-          httpOnly: true,
-          maxAge: 60 * 60 * 1000, // 1小时
-        });
         return res.json({
           status: true,
           user: usernameCheck,
+          token:token
         });
       }
     } else {
@@ -69,17 +66,13 @@ module.exports.setAvatar = async (req, res, next) => {
    await UserModel.findByIdAndUpdate(userId, {
       isAvatarImageSet: true,
       avatarImage: image,
-    }).then((data,err) => {
-      if(err){
-        console.log("err"+err.message)
-      }else{
-        console.log(data)
+    }).then(data => {
+      console.log(data)
         res.json({
           isSet:data.isAvatarImageSet,
           image:data.avatarImage
         });
-      }
-    })
+    }).catch(err=>console.log(err.message))
     
   } catch (error) {
     next(error);
