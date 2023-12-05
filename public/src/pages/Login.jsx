@@ -57,10 +57,10 @@ const Login = () => {
   const handleValidation = () => {
     const { username, password } = value;
     if (username.length < 3) {
-      toast.error("please check your username", toastOptions);
+      toast.error("请检查你的用户名", toastOptions);
       return false;
     } else if (password.length < 8) {
-      toast.error("please check your password",toastOptions);
+      toast.error("请检查你的密码",toastOptions);
       return false;
     } 
     return true;
@@ -71,7 +71,7 @@ const Login = () => {
         <form onSubmit={(event) => handleSubmit(event)}>
           <div className="brand">
             <img src={Logo} alt="logo" />
-            <h1>snappy</h1>
+            <h1>CHAT</h1>
           </div>
           <input
             type="text"
