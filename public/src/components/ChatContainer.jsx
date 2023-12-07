@@ -62,7 +62,7 @@ const ChatContainer = ({ currentChat, currentUser, socket }) => {
   return (
     <>
       <Container>
-        <div className="chat-header">
+        <div className="chat-header" style={{boxShadow: " 0 0 0.5px 0 "}}>
           <div className="user-details">
             <div className="avatar">
               <img
@@ -152,14 +152,14 @@ const Container = styled.div`
   gap: 0.1rem;
   overflow: hidden;
   background-color: rgb(245,245,245);
-  @media screen and (min-width: 720px) and (max-width: 1080px) {
-    grid-template-rows: 15% 70% 15%;
-  }
+  //@media screen and (min-width: 720px) and (max-width: 1080px) {
+  //  grid-template-rows: 15% 70% 15%;
+  //}
   .chat-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 0 1rem;
+    padding: 0 1rem;  
     .user-details {
       display: flex;
       align-items: center;
@@ -180,7 +180,7 @@ const Container = styled.div`
     display: flex;
     flex-direction: column;
     gap: 1rem;
-    margin-top: 2rem;
+    padding-top: 1rem;
     overflow: auto;
     &::-webkit-scrollbar {
       width: 0.2rem;

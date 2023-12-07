@@ -81,15 +81,21 @@ const Container = styled.div`
   justify-content: center; //主轴居中
   gap: 1rem;
   align-items: center; //辅轴居中
-  background-color: #131324;
+  background-color: snow;
   .container {
-    height: 85vh;
-    width: 85vw;
+    height: 80vh;
+    width: 80vw;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
     background-color: #00000076;
     display: grid;
-    grid-template-columns: 20% 80%;
-    @media screen and(min-width:720px) and (max-width: 1080px) {
-      grid-template-columns: 35% 65%;
-    }
+    grid-template-columns: 22% 78%;
+    //@media screen and (max-width: 1324px) {
+    //  grid-template-columns: 30% 70%;
+    //}
+    //@media screen and (max-width: 1000px) {
+    //  grid-template-columns: 40% 60%;
+    //}@media screen and (max-width: 740px) {
+    //  grid-template-columns: 45% 55%;
+    //}
   }
 `;
