@@ -10,7 +10,7 @@ import {
     UserSwitchOutlined
 } from "@ant-design/icons"
 import {Avatar, Card, Input, Result, Skeleton} from 'antd';
-import {searchUser} from "../utils/ApIRouters";
+import {requestFriend, searchUser} from "../utils/ApIRouters";
 import axios from "axios";
 import Meta from "antd/es/card/Meta";
 
@@ -49,6 +49,11 @@ const Contacts = ({contacts, currentUser, changeChat}) => {
     const onSearch = (value, _e, info) => {
         console.log(info?.source, value, _e);
         axios.get(`${searchUser}/${value}`).then(r => setSearchUsers(r.data.userDetail)).catch(e => console.log(e))
+    }
+    const addFriends = (to,requestMessage) => {
+        console.log(to)
+        console.log(requestMessage)
+       axios.post(requestFriend,{to,requestMessage}).then(r =>console.log(r))
     }
     return (
         <>
@@ -121,7 +126,7 @@ const Contacts = ({contacts, currentUser, changeChat}) => {
                                                                         </div>}
                                                                         style={{width: "100%"}}
                                                                     />
-                                                                    <div><UserAddOutlined/></div>
+                                                                 <div onClick={() => addFriends(user.username,{username:currentUsername,message:"我想添加你为好友~",avatarImage: currentAvatarImage})}><UserAddOutlined/></div>
                                                                 </div>
                                                             </Card>
                                                         })
@@ -134,7 +139,56 @@ const Contacts = ({contacts, currentUser, changeChat}) => {
                             }
                             {
                                 select === "message" &&
-                                <div className="open"><ArrowLeftOutlined onClick={() => setOpen(false)}/>通知</div>
+                                <div className="addRequest">
+                                    {
+                                        currentUser?.friendsRequest?.map(request => {
+                                            return <Card
+                                                style={{
+                                                    width: "90%",
+                                                    // marginTop: 16,
+                                                    // height: 100
+                                                    // backgroundColor: "#9A9A9A",
+                                                    overflow: "hidden",
+                                                    minWidth: 0
+                                                }}
+                                                // extra = {<div>add</div>}
+                                                size="small"
+                                                hoverable={true}
+                                            >
+                                                <div style={{
+                                                    width: "94%",
+                                                    display: "flex",
+                                                    justifyContent: "space-between",
+                                                }}>
+                                                    <Meta
+                                                        avatar={<Avatar src={`data:image/svg+xml;base64,${request.avatarImage}`}/>}
+                                                        title={request.username}
+                                                        description={<div style={{
+                                                            display: "flex",
+                                                            justifyContent: "center",
+                                                            alignItems: "center",
+                                                        }}>
+                                                            <div>
+                                                                <svg t="1701935886274" className="icon"
+                                                                     viewBox="0 0 1024 600" version="1.1"
+                                                                     xmlns="http://www.w3.org/2000/svg"
+                                                                     p-id="6560" width="17" height="17">
+                                                                    <path
+                                                                        fill="rgb(0,0,0,0.5)"
+                                                                        d="M891.521 169.794H132.468c-36.144 0-49.696 9.041-49.696 49.696v528.625c0 40.657 13.558 49.696 49.696 49.696H887c36.144 0 49.696-9.04 49.696-49.696V219.49c4.518-40.657-9.04-49.696-45.187-49.696z m-67.77 49.704C710.8 323.417 539.101 499.625 521.033 513.177c-4.518 4.517-9.042 4.517-18.072 0-22.586-18.072-207.836-194.281-311.751-293.68h632.536zM132.48 748.126V237.578l271.087 257.531c27.108 27.109 45.187 40.657 58.732 54.218 18.071 9.041 31.63 13.557 49.696 13.557s31.63-4.517 49.696-13.557v-4.517c27.108-18.072 112.951-108.432 329.82-307.232v510.548H132.456z m0 0z"
+                                                                        p-id="6561"></path>
+                                                                </svg>
+                                                            </div>
+                                                            <div style={{overflow: "hidden", }}>{`:${request.message}`}</div>
+                                                        </div>}
+                                                        style={{width: "100%"}}
+                                                    />
+                                                    <div>{request.state}</div>
+                                                </div>
+                                            </Card>
+                                        })
+                                    }
+                                </div>
                             }
                             {
                                 select === "" &&

@@ -1,4 +1,4 @@
-const { register, login,setAvatar, getAllUsers, searchUser} = require('../controllers/userController')
+const { register, login,setAvatar, getAllUsers, searchUser,requestFriend} = require('../controllers/userController')
 
 const router=require('express').Router()
 
@@ -10,5 +10,6 @@ router.post('/setAvatar/:id',setAvatar)
 
 router.get('/allusers/:id',getAllUsers)
 router.get('/searchUser/:username',searchUser)
+router.post('/requestFriend',requestFriend)
 
 module.exports=router

@@ -28,6 +28,55 @@ const userSchema=new mongoose.Schema({
     avatarImage:{
         type:String,
         default:''
+    },
+    //好友请求
+    friendsRequest: {
+        type: [
+            {
+                username:{
+                    type: String,
+                    required: true
+                },
+                message:{
+                    type: String,
+                    required: true
+                },
+                state:{
+                    type: Number,
+                    // 0 待处理 1 同意 2 拒绝
+                    default: 0
+                },
+                avatarImage:{
+                    type:String,
+                    default:''
+                },
+                email:{
+                    type:String,
+                    required:true
+                }
+
+            }
+        ],
+        default: []
+    },
+    // 好友列表
+    linkList: {
+       type: [
+           {
+               id:{
+                   type:mongoose.Schema.Types.ObjectId,
+                   required: true
+               },
+               username: {
+                   type: String,
+                   required: true
+               },
+               avatarImage:{
+                   type:String,
+                   default:''
+               }
+           }
+       ]
     }
 })
  

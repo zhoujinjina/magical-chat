@@ -100,7 +100,12 @@ module.exports.getAllUsers = async (req, res, next) => {
 }
 module.exports.searchUser = async (req, res, next) => {
     try {
-        const user = await UserModel.find({username:{ $regex: `.*${req.params.username}.*`, $options: 'i' } }).select(["username", "email", "avatarImage"]).then((data,err) => {
+        const user = await UserModel.find({
+            username: {
+                $regex: `.*${req.params.username}.*`,
+                $options: 'i'
+            }
+        }).select(["username", "email", "avatarImage"]).then((data, err) => {
             if (err) {
                 console.log(err.message)
             } else {
@@ -110,6 +115,31 @@ module.exports.searchUser = async (req, res, next) => {
             }
         })
 
+    } catch (e) {
+        next(e)
+    }
+}
+module.exports.requestFriend = async (req, res, next) => {
+    try {
+        // const user = await UserModel.find({username:{ $regex: `.*${req.params.username}.*`, $options: 'i' } }).select(["username", "email", "avatarImage"]).then((data,err) => {
+        //     if (err) {
+        //         console.log(err.message)
+        //     } else {
+        //         res.json({
+        //             userDetail: data
+        //         })
+        //     }
+        // })
+        const {to, requestMessage} = req.body
+        console.log(to, requestMessage)
+        const result = await UserModel.updateOne({username: to}, {$push: {friendsRequest: requestMessage}}).then((data, err) => {
+            if (err) {
+                console.log(err)
+            }
+            res.json({
+                state: "好友申请发送成功"
+            })
+        })
     } catch (e) {
         next(e)
     }
