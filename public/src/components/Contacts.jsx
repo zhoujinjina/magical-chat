@@ -3,25 +3,27 @@ import Logo from "../assets/logo.svg";
 import styled from "styled-components";
 import {
     ArrowLeftOutlined,
-    BellOutlined, EditOutlined, EllipsisOutlined,
+    BellOutlined, CheckOutlined, CloseOutlined, EditOutlined, EllipsisOutlined, MessageOutlined,
     QqOutlined,
     SettingOutlined, TeamOutlined,
     UserAddOutlined,
     UserSwitchOutlined
 } from "@ant-design/icons"
-import {Avatar, Card, Input, Result, Skeleton} from 'antd';
-import {requestFriend, searchUser} from "../utils/ApIRouters";
+import {Avatar, Card, Input, message} from 'antd';
+import {handleFriendsRequest, requestFriend, searchUser} from "../utils/ApIRouters";
 import axios from "axios";
 import Meta from "antd/es/card/Meta";
+import {useNavigate} from "react-router-dom";
 
 const {Search} = Input;
-const Contacts = ({contacts, currentUser, changeChat}) => {
+const Contacts = ({contacts, currentUser, changeChat, setCurrentUser}) => {
     const [currentSelected, setCurrentSelected] = useState(undefined);
     const [currentUsername, setCurrentUsername] = useState(undefined);
     const [currentAvatarImage, setCurrentAvatarImage] = useState('');
     const [open, setOpen] = useState(false)
     const [select, setSelect] = useState("")
     const [searchUsers, setSearchUsers] = useState(undefined)
+    const navigate = useNavigate()
     useEffect(() => {
         if (currentUser) {
             setCurrentUsername(currentUser.username)
@@ -36,7 +38,7 @@ const Contacts = ({contacts, currentUser, changeChat}) => {
         setOpen(true)
         switch (type) {
             case 0 :
-                setSelect("");
+                navigate('/login');
                 break;
             case 1 :
                 setSelect("addUser");
@@ -46,23 +48,47 @@ const Contacts = ({contacts, currentUser, changeChat}) => {
                 break;
         }
     }
+    const chat = (username) => {
+        // 直接切换到聊天
+        const user = contacts.find(item => item.username === username)
+        const index = contacts.indexOf(user)
+        changeCurrentChat(index,user)
+        setOpen(false)
+    }
     const onSearch = (value, _e, info) => {
-        console.log(info?.source, value, _e);
-        axios.get(`${searchUser}/${value}`).then(r => setSearchUsers(r.data.userDetail)).catch(e => console.log(e))
+        // 搜索用户
+        // console.log(info?.source, value, _e);
+        axios.get(`${searchUser}/${value}`).then(r => {
+            const newData = r.data.userDetail.filter(item => item.username !== currentUsername)
+            setSearchUsers(newData)
+        }).catch(e => console.log(e))
+    }
+    const ifFriends= (user) => {
+        // 判断是否是联系人
+      const list = currentUser?.linkList.map (item => item.username)
+        return list?.includes(user?.username)
     }
     const addFriends = (to,requestMessage) => {
         console.log(to)
         console.log(requestMessage)
-       axios.post(requestFriend,{to,requestMessage}).then(r =>console.log(r))
+       axios.post(requestFriend,{to,requestMessage}).then(r => message.success("好友申请发送成功！")).catch(e => console.log(e))
+    }
+    const handleRequest = (type,currentUsername,requestId,requestUsername) => {
+        console.log(type,currentUsername,requestId,requestUsername)
+        axios.post(handleFriendsRequest,{type,currentUsername,requestId,requestUsername}).then(r => {
+            console.log(r.data.userDetail)
+            localStorage.setItem("chat-app-user",JSON.stringify(r.data.userDetail));
+            setCurrentUser(r.data.userDetail)
+        }).catch(e => console.log(e))
     }
     return (
         <>
             {contacts && currentUser && (
                 <>
                     {
-                        open ? <OpenContainer>
+                        open ? <>
                             {
-                                select === "addUser" && <>
+                                select === "addUser" && <OpenContainer>
                                     <div className="search">
                                         <div><ArrowLeftOutlined onClick={() => {
                                             setOpen(false)
@@ -84,8 +110,9 @@ const Contacts = ({contacts, currentUser, changeChat}) => {
                                                     <div style={{color: "#2c2121cc"}}>未找到相关用户</div>
                                                 </> : <>
                                                     {
-                                                        searchUsers.map(user => {
+                                                        searchUsers.map((user,index) => {
                                                             return <Card
+                                                                key={index}
                                                                 style={{
                                                                     width: "90%",
                                                                     // marginTop: 16,
@@ -108,7 +135,7 @@ const Contacts = ({contacts, currentUser, changeChat}) => {
                                                                         title={user.username}
                                                                         description={<div style={{
                                                                             display: "flex",
-                                                                            justifyContent: "center",
+                                                                            justifyContent: "flex-start",
                                                                             alignItems: "center",
                                                                         }}>
                                                                             <div>
@@ -126,7 +153,9 @@ const Contacts = ({contacts, currentUser, changeChat}) => {
                                                                         </div>}
                                                                         style={{width: "100%"}}
                                                                     />
-                                                                 <div onClick={() => addFriends(user.username,{username:currentUsername,message:"我想添加你为好友~",avatarImage: currentAvatarImage})}><UserAddOutlined/></div>
+                                                                    {
+                                                                       ! ifFriends(user) ?  <div onClick={() => addFriends(user.username,{username:currentUsername,message:"我想添加你为好友~",avatarImage: currentAvatarImage, state: 0})}><UserAddOutlined/></div> : <div onClick={() => chat(user.username)}><MessageOutlined /></div>
+                                                                    }
                                                                 </div>
                                                             </Card>
                                                         })
@@ -134,67 +163,60 @@ const Contacts = ({contacts, currentUser, changeChat}) => {
                                                 </>
                                         }
                                     </div>
-                                </>
+                                </OpenContainer>
 
                             }
                             {
                                 select === "message" &&
-                                <div className="addRequest">
-                                    {
-                                        currentUser?.friendsRequest?.map(request => {
-                                            return <Card
-                                                style={{
-                                                    width: "90%",
-                                                    // marginTop: 16,
-                                                    // height: 100
-                                                    // backgroundColor: "#9A9A9A",
-                                                    overflow: "hidden",
-                                                    minWidth: 0
-                                                }}
-                                                // extra = {<div>add</div>}
-                                                size="small"
-                                                hoverable={true}
-                                            >
-                                                <div style={{
-                                                    width: "94%",
-                                                    display: "flex",
-                                                    justifyContent: "space-between",
-                                                }}>
-                                                    <Meta
-                                                        avatar={<Avatar src={`data:image/svg+xml;base64,${request.avatarImage}`}/>}
-                                                        title={request.username}
-                                                        description={<div style={{
-                                                            display: "flex",
-                                                            justifyContent: "center",
-                                                            alignItems: "center",
-                                                        }}>
-                                                            <div>
-                                                                <svg t="1701935886274" className="icon"
-                                                                     viewBox="0 0 1024 600" version="1.1"
-                                                                     xmlns="http://www.w3.org/2000/svg"
-                                                                     p-id="6560" width="17" height="17">
-                                                                    <path
-                                                                        fill="rgb(0,0,0,0.5)"
-                                                                        d="M891.521 169.794H132.468c-36.144 0-49.696 9.041-49.696 49.696v528.625c0 40.657 13.558 49.696 49.696 49.696H887c36.144 0 49.696-9.04 49.696-49.696V219.49c4.518-40.657-9.04-49.696-45.187-49.696z m-67.77 49.704C710.8 323.417 539.101 499.625 521.033 513.177c-4.518 4.517-9.042 4.517-18.072 0-22.586-18.072-207.836-194.281-311.751-293.68h632.536zM132.48 748.126V237.578l271.087 257.531c27.108 27.109 45.187 40.657 58.732 54.218 18.071 9.041 31.63 13.557 49.696 13.557s31.63-4.517 49.696-13.557v-4.517c27.108-18.072 112.951-108.432 329.82-307.232v510.548H132.456z m0 0z"
-                                                                        p-id="6561"></path>
-                                                                </svg>
-                                                            </div>
-                                                            <div style={{overflow: "hidden", }}>{`:${request.message}`}</div>
-                                                        </div>}
-                                                        style={{width: "100%"}}
-                                                    />
-                                                    <div>{request.state}</div>
-                                                </div>
-                                            </Card>
-                                        })
-                                    }
-                                </div>
+                                <OpenContainer2>
+                                    <div className="head"><ArrowLeftOutlined onClick={() => setOpen(false)}/></div>
+                                    <div className="requestList">
+                                        {
+                                            currentUser?.friendsRequest?.sort((a,b) => a.state - b.state).map((request,index) => {
+                                                return <Card
+                                                    key={index}
+                                                    style={{
+                                                        width: "90%",
+                                                        // marginTop: 16,
+                                                        // height: 100
+                                                        // backgroundColor: "#9A9A9A",
+                                                        overflow: "hidden",
+                                                        minWidth: 0
+                                                    }}
+                                                    actions={request.state === 0 ? [
+                                                            <div onClick={() => handleRequest(1, currentUsername, request._id, request.username)}>同意</div>,
+                                                            <div onClick={() => handleRequest(2, currentUsername, request._id, request.username)}>拒绝</div>
+                                                        ] : request.state === 1 ? [
+                                                            <div>已同意</div>
+                                                        ] : [
+                                                            <div>已拒绝</div>
+                                                        ]}
+                                                    // extra = {<div>add</div>}
+                                                    size="small"
+                                                    hoverable={true}
+                                                >
+                                                    <div style={{
+                                                        width: "94%",
+                                                        display: "flex",
+                                                        justifyContent: "space-between",
+                                                    }}>
+                                                        <Meta
+                                                            avatar={<Avatar src={`data:image/svg+xml;base64,${request.avatarImage}`}/>}
+                                                            title={request.username}
+                                                            description={request.message}
+                                                            style={{width: "100%"}}
+                                                        />
+                                                        <div>
+
+                                                        </div>
+                                                    </div>
+                                                </Card>
+                                            })
+                                        }
+                                    </div>
+                                </OpenContainer2>
                             }
-                            {
-                                select === "" &&
-                                <div className="open"><ArrowLeftOutlined onClick={() => setOpen(false)}/>切换登录</div>
-                            }
-                        </OpenContainer> : <Container>
+                        </> : <Container>
                             <div className="brand">
                                 <div className="avatar">
                                     <img
@@ -298,9 +320,10 @@ const Container = styled.div`
     align-items: center;
     overflow: auto;
     gap: 0.8rem;
+    padding: 0 0 10px 0;
     &::-webkit-scrollbar {
-      width: 0.2rem;
-
+      //width: 0.2rem;
+      width: 0;
       &-thumb {
         background-color: #ffffff39;
         width: 0.1rem;
@@ -391,13 +414,32 @@ const OpenContainer = styled.div`
 
     }
   }
-
   .userList {
     //background-color: red;
     display: flex;
     flex-direction: column;
     gap: 10px;
     align-items: center;
+    overflow: hidden;
+  }
+
+`
+const OpenContainer2 = styled.div`
+  background-color: gray;
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  .head {
+    color: white;
+    margin-top: 20px;
+    margin-left: 10px;
+  }
+  .requestList {
+    margin-top: 20px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
     overflow: hidden;
   }
 

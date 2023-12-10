@@ -32,9 +32,11 @@ const Chat = () => {
   }, [currentUser]);
   useEffect(() => {
     const loadContacts = async () => {
-      const { data } = await axios.get(`${allUserRoute}/${currentUser._id}`);
-      setContacts(data);
-      // console.log(data);
+      // const { data } = await axios.get(`${allUserRoute}/${currentUser._id}`);
+      if (currentUser) {
+        console.log()
+        setContacts(currentUser?.linkList)
+      }
     };
     if (currentUser) {
       if (currentUser.isAvatarImageSet) {
@@ -55,6 +57,7 @@ const Chat = () => {
           <Contacts
             contacts={contacts}
             currentUser={currentUser}
+            setCurrentUser={setCurrentUser}
             changeChat={handleChatChange}
           />
           {currentChat === undefined ? (
@@ -89,12 +92,13 @@ const Container = styled.div`
     background-color: #00000076;
     display: grid;
     grid-template-columns: 22% 78%;
-    //@media screen and (max-width: 1324px) {
-    //  grid-template-columns: 30% 70%;
-    //}
-    //@media screen and (max-width: 1000px) {
-    //  grid-template-columns: 40% 60%;
-    //}@media screen and (max-width: 740px) {
+    @media screen and (max-width: 1100px) {
+      grid-template-columns: 30% 70%;
+    }
+    @media screen and (max-width: 800px) {
+      grid-template-columns: 33% 67%;
+    }
+    // @media screen and (max-width: 740px) {
     //  grid-template-columns: 45% 55%;
     //}
   }

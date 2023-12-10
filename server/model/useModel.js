@@ -44,7 +44,7 @@ const userSchema=new mongoose.Schema({
                 state:{
                     type: Number,
                     // 0 待处理 1 同意 2 拒绝
-                    default: 0
+                    required: true
                 },
                 avatarImage:{
                     type:String,

@@ -19,11 +19,11 @@ const Login = () => {
     draggable: true,
     theme: "dark",
   };
-  useEffect(()=>{
-  if(localStorage.getItem('chat-app-user')){
-    navigate('/')
-  }
-  })
+  // useEffect(()=>{
+  // if(localStorage.getItem('chat-app-user')){
+  //   navigate('/')
+  // }
+  // })
   const handleChange = (e) => {
     setValue({ ...value, [e.target.name]: e.target.value });
   };
