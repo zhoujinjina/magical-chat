@@ -1,7 +1,7 @@
 import axios from "axios";
 import React, { useEffect, useRef, useState } from "react";
 import styled from "styled-components";
-import { allUserRoute, host } from "../utils/ApIRouters";
+import {allUserRoute, getUserDetail, host} from "../utils/ApIRouters";
 import { useNavigate } from "react-router-dom";
 import Contacts from "../components/Contacts";
 import Welecome from "../components/Welecome";
@@ -28,13 +28,24 @@ const Chat = () => {
     if (currentUser) {
       socket.current=io(host)//使连接到服务端127.0.0.1:5000
       socket.current.emit("add-user",currentUser._id)
+      socket.current.on("addFriends",(data) => {
+        axios.post(getUserDetail,{user: currentUser.username}).then(r => {
+          setCurrentUser(r.data)
+          localStorage.setItem("chat-app-user",JSON.stringify(r.data));
+        })
+      })
+      socket.current.on("handleRequest", (data) => {
+        axios.post(getUserDetail,{user: currentUser.username}).then(r => {
+          setCurrentUser(r.data)
+          localStorage.setItem("chat-app-user",JSON.stringify(r.data));
+        })
+      })
     }
   }, [currentUser]);
   useEffect(() => {
     const loadContacts = async () => {
       // const { data } = await axios.get(`${allUserRoute}/${currentUser._id}`);
       if (currentUser) {
-        console.log()
         setContacts(currentUser?.linkList)
       }
     };
@@ -59,6 +70,7 @@ const Chat = () => {
             currentUser={currentUser}
             setCurrentUser={setCurrentUser}
             changeChat={handleChatChange}
+            socket ={socket}
           />
           {currentChat === undefined ? (
             <Welecome currentUser={currentUser} />

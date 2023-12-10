@@ -67,7 +67,7 @@ module.exports.setAvatar = async (req, res, next) => {
             isAvatarImageSet: true,
             avatarImage: image,
         }).then(data => {
-            console.log(data)
+            // console.log(data)
             res.json({
                 isSet: data.isAvatarImageSet,
                 image: data.avatarImage
@@ -87,6 +87,21 @@ module.exports.getAllUsers = async (req, res, next) => {
             "avatarImage",
             "_id"
         ]).then((data, err) => {
+            if (err) {
+                console.log(err.message);
+            } else {
+                res.json(data)
+            }
+        })
+
+    } catch (error) {
+        next(error)
+    }
+}
+module.exports.getUserDetail = async (req, res, next) => {
+    try {
+        const {user} = req.body
+        const users = await UserModel.findOne({username: user}).then((data, err) => {
             if (err) {
                 console.log(err.message);
             } else {
@@ -122,7 +137,6 @@ module.exports.searchUser = async (req, res, next) => {
 module.exports.requestFriend = async (req, res, next) => {
     try {
         const {to, requestMessage} = req.body
-        console.log(to, requestMessage)
             const result = await UserModel.updateOne({username: to}, {$pull: {friendsRequest: requestMessage}}).then(async (data, err) => {
             if (err) {
                 console.log(err)

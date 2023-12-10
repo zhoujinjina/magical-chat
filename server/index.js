@@ -2,6 +2,7 @@ const express = require("express");
 const cors = require("cors");
 const socket = require("socket.io");
 const mongoose = require("mongoose");
+const UserModel = require("./model/useModel")
 const userRoutes = require("./routes/userRoutes");
 const messagesRoutes = require("./routes/messagesRoute");
 const app = express();
@@ -48,5 +49,36 @@ io.on("connection", (socket) => {
     if (sendUserSocket) {
       socket.to(sendUserSocket).emit("msg-recieve", data);
     }
+  });
+  socket.on("addFriends", async (data) => {
+    console.log("jinjin")
+    const noticeUser =await UserModel.findOne({username: data.notice}).select(["_id"]).then((data,err) => {
+      if (err) {
+        console.log(err)
+      }
+      console.log(data._id.toString())
+      const sendUserSocket = onlineUsers.get(data._id.toString());
+      console.log(onlineUsers)
+      if (sendUserSocket) {
+        console.log("转发发送请求")
+        socket.to(sendUserSocket).emit("addFriends", {message: "我想添加你好友"});
+      }
+    })
+    console.log(data)
+  });
+  socket.on("handleRequest", async (data) => {
+    console.log(data)
+    const noticeUser =await UserModel.findOne({username: data.notice}).select(["_id"]).then((data,err) => {
+      if (err) {
+        console.log(err)
+      }
+      console.log(data._id.toString())
+      console.log(onlineUsers)
+      const sendUserSocket = onlineUsers.get(data._id.toString());
+      if (sendUserSocket) {
+        console.log("转发处理")
+        socket.to(sendUserSocket).emit("handleRequest",{message: "同意你好友了"})
+      }
+    })
   });
 });

@@ -8,3 +8,4 @@ export const getAllMessage=`${host}/api/messages/getmsg`
 export const searchUser=`${host}/api/auth/searchUser`
 export const requestFriend=`${host}/api/auth/requestFriend`
 export const handleFriendsRequest=`${host}/api/auth/handleFriendsRequest`
+export const getUserDetail=`${host}/api/auth/getUserDetail`

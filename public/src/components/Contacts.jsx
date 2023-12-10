@@ -16,7 +16,7 @@ import Meta from "antd/es/card/Meta";
 import {useNavigate} from "react-router-dom";
 
 const {Search} = Input;
-const Contacts = ({contacts, currentUser, changeChat, setCurrentUser}) => {
+const Contacts = ({contacts, currentUser, changeChat, setCurrentUser,socket}) => {
     const [currentSelected, setCurrentSelected] = useState(undefined);
     const [currentUsername, setCurrentUsername] = useState(undefined);
     const [currentAvatarImage, setCurrentAvatarImage] = useState('');
@@ -38,6 +38,7 @@ const Contacts = ({contacts, currentUser, changeChat, setCurrentUser}) => {
         setOpen(true)
         switch (type) {
             case 0 :
+                localStorage.clear()
                 navigate('/login');
                 break;
             case 1 :
@@ -69,16 +70,20 @@ const Contacts = ({contacts, currentUser, changeChat, setCurrentUser}) => {
         return list?.includes(user?.username)
     }
     const addFriends = (to,requestMessage) => {
-        console.log(to)
-        console.log(requestMessage)
-       axios.post(requestFriend,{to,requestMessage}).then(r => message.success("好友申请发送成功！")).catch(e => console.log(e))
+        // console.log(to)
+        // console.log(requestMessage)
+       axios.post(requestFriend,{to,requestMessage}).then(r => {
+           message.success("好友申请发送成功！")
+           socket.current.emit("addFriends",{notice:to})
+       }).catch(e => console.log(e))
     }
     const handleRequest = (type,currentUsername,requestId,requestUsername) => {
-        console.log(type,currentUsername,requestId,requestUsername)
+        // console.log(type,currentUsername,requestId,requestUsername)
         axios.post(handleFriendsRequest,{type,currentUsername,requestId,requestUsername}).then(r => {
-            console.log(r.data.userDetail)
+            // console.log(r.data.userDetail)
             localStorage.setItem("chat-app-user",JSON.stringify(r.data.userDetail));
             setCurrentUser(r.data.userDetail)
+            socket.current.emit("handleRequest",{notice:requestUsername})
         }).catch(e => console.log(e))
     }
     return (
