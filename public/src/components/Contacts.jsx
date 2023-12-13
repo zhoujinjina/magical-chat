@@ -16,7 +16,7 @@ import Meta from "antd/es/card/Meta";
 import {useNavigate} from "react-router-dom";
 
 const {Search} = Input;
-const Contacts = ({contacts, currentUser, changeChat, setCurrentUser,socket}) => {
+const Contacts = ({setIfNotice, ifNotice, contacts, currentUser, changeChat, setCurrentUser,socket}) => {
     const [currentSelected, setCurrentSelected] = useState(undefined);
     const [currentUsername, setCurrentUsername] = useState(undefined);
     const [currentAvatarImage, setCurrentAvatarImage] = useState('');
@@ -231,8 +231,12 @@ const Contacts = ({contacts, currentUser, changeChat, setCurrentUser,socket}) =>
                                 </div>
                                 <div onClick={() => handleOpen(0)}><UserSwitchOutlined/></div>
                                 <div onClick={() => handleOpen(1)}><UserAddOutlined/></div>
-                                <div onClick={() => handleOpen(2)} style={{display: "flex", alignItems: "center"}}>
-                                    <BellOutlined/><span className="alertAddUser">.</span></div>
+                                <div onClick={() => {
+                                    handleOpen(2)
+                                    setIfNotice(false)
+                                }} style={{display: "flex", alignItems: "center"}}>
+                                    {ifNotice && <span className="alertAddUser">.</span>}
+                                    <BellOutlined/></div>
                                 {/*<img src={Logo} alt="logo"/>*/}
                                 <h3>CHAT</h3>
                             </div>
@@ -281,7 +285,7 @@ const Contacts = ({contacts, currentUser, changeChat, setCurrentUser,socket}) =>
 export default Contacts;
 const Container = styled.div`
   display: grid;
-  grid-template-rows: 10% 90%;
+  grid-template-rows: 9.5% 90%;
   overflow: hidden;
   //background-color: #080420;
   background-color: gray;
@@ -292,6 +296,8 @@ const Container = styled.div`
     gap: 1rem;
     justify-content: center;
     //min-width: 200px;
+    //border-bottom: 1px solid #9A9A9A;
+    box-shadow: 0 0 5px rgb(0,0,0,0.5);
     @media screen  and (max-width: 1500px) {
       gap: 0.5rem;
     }
@@ -301,6 +307,7 @@ const Container = styled.div`
     }
 
     h3 {
+      margin-top: 5px;
       color: white;
       text-transform: uppercase;
     }
@@ -315,6 +322,8 @@ const Container = styled.div`
         font-size: 30px;
         color: red;
         font-weight: 900;
+        position: fixed;
+        margin-left: 17px;
       }
     }
   }
@@ -324,8 +333,9 @@ const Container = styled.div`
     flex-direction: column;
     align-items: center;
     overflow: auto;
-    gap: 0.8rem;
-    padding: 0 0 10px 0;
+    //gap: 0.8rem;
+    gap: 6px;
+    padding: 8px 0 10px 0;
     &::-webkit-scrollbar {
       //width: 0.2rem;
       width: 0;
@@ -337,7 +347,7 @@ const Container = styled.div`
     }
 
     .contact {
-      background-color: #ffffff34;
+      background-color: rgb(230,206,206,0.09);
       min-height: 4rem;
       cursor: pointer;
       width: 88%;
@@ -347,7 +357,9 @@ const Container = styled.div`
       gap: 1rem;
       align-items: center;
       transition: 0.5s ease-in-out;
-
+      &:hover {
+        background-color: #ffffff34;
+      }
       .avatar {
         img {
           height: 3rem;
@@ -362,7 +374,9 @@ const Container = styled.div`
     }
 
     .selected {
-      background-color: #9a86f3;
+      //background-color: #ffffff34;
+      background-color: rgb(154,154,154);
+ 
     }
   }
 

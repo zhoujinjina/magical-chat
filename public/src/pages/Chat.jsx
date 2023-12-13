@@ -13,6 +13,7 @@ const Chat = () => {
   const [contacts, setContacts] = useState([]);
   const [currentUser, setCurrentUser] = useState(undefined);
   const [currentChat, setCurrentChat] = useState(undefined);
+  const [ifNotice, setIfNotice] = useState(false)
   useEffect(() => {
     const getCurrentUser = async () => {
       if (!localStorage.getItem("chat-app-user")) {
@@ -32,6 +33,7 @@ const Chat = () => {
         axios.post(getUserDetail,{user: currentUser.username}).then(r => {
           setCurrentUser(r.data)
           localStorage.setItem("chat-app-user",JSON.stringify(r.data));
+          setIfNotice(true)
         })
       })
       socket.current.on("handleRequest", (data) => {
@@ -70,7 +72,9 @@ const Chat = () => {
             currentUser={currentUser}
             setCurrentUser={setCurrentUser}
             changeChat={handleChatChange}
-            socket ={socket}
+            socket={socket}
+            ifNotice={ifNotice}
+            setIfNotice={setIfNotice}
           />
           {currentChat === undefined ? (
             <Welecome currentUser={currentUser} />

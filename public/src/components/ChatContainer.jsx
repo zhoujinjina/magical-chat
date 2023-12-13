@@ -4,6 +4,7 @@ import Logout from "./Logout";
 import ChatInput from "./ChatInput";
 import axios from "axios";
 import { getAllMessage, sendMessagesRoute } from "../utils/ApIRouters";
+import {DeleteOutlined} from "@ant-design/icons";
 const ChatContainer = ({ currentChat, currentUser, socket }) => {
   const [allMessages, setAllMessages] = useState([]);
   const scrollRef = useRef();
@@ -74,7 +75,10 @@ const ChatContainer = ({ currentChat, currentUser, socket }) => {
               <h3>{currentChat.username}</h3>
             </div>
           </div>
-          <Logout />
+          <div className="action-button">
+            <div className="delete-chat"><DeleteOutlined /></div>
+            <div className="logout-chat"><Logout /></div>
+          </div>
         </div>
         <div className="chat-messages">
           {allMessages.map((message, index) => {
@@ -173,6 +177,21 @@ const Container = styled.div`
         h3 {
           color: black;
         }
+      }
+    }
+    .action-button {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 4px;
+      .delete-chat {
+        padding: 0.581rem;
+        border-radius: 0.5rem;
+        color: #ebe7ff;
+        background-color: #9A9A9A;
+        border: none;
+        cursor: pointer;
+        font-size: 1.05rem;
       }
     }
   }
