@@ -50,8 +50,20 @@ io.on("connection", (socket) => {
       socket.to(sendUserSocket).emit("msg-recieve", data);
     }
   });
+  socket.on("deleteUser", async (data1) => {
+    console.log(data1)
+    const noticeUser =await UserModel.findOne({username: data1.notice}).select(["_id"]).then((data,err) => {
+      if (err) {
+        console.log(err)
+      }
+      const sendUserSocket = onlineUsers.get(data._id.toString());
+      if (sendUserSocket) {
+        console.log(data1.other)
+        socket.to(sendUserSocket).emit("deleteUser", {message: "你被删除啦！",other:data1.other});
+      }
+    })
+  });
   socket.on("addFriends", async (data) => {
-    console.log("jinjin")
     const noticeUser =await UserModel.findOne({username: data.notice}).select(["_id"]).then((data,err) => {
       if (err) {
         console.log(err)

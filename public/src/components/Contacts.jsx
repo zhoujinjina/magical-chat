@@ -16,7 +16,7 @@ import Meta from "antd/es/card/Meta";
 import {useNavigate} from "react-router-dom";
 
 const {Search} = Input;
-const Contacts = ({setIfNotice, ifNotice, contacts, currentUser, changeChat, setCurrentUser,socket}) => {
+const Contacts = ({setIfNotice, ifNotice, contacts, currentUser, changeChat, setCurrentUser, socket}) => {
     const [currentSelected, setCurrentSelected] = useState(undefined);
     const [currentUsername, setCurrentUsername] = useState(undefined);
     const [currentAvatarImage, setCurrentAvatarImage] = useState('');
@@ -53,7 +53,7 @@ const Contacts = ({setIfNotice, ifNotice, contacts, currentUser, changeChat, set
         // 直接切换到聊天
         const user = contacts.find(item => item.username === username)
         const index = contacts.indexOf(user)
-        changeCurrentChat(index,user)
+        changeCurrentChat(index, user)
         setOpen(false)
     }
     const onSearch = (value, _e, info) => {
@@ -64,26 +64,26 @@ const Contacts = ({setIfNotice, ifNotice, contacts, currentUser, changeChat, set
             setSearchUsers(newData)
         }).catch(e => console.log(e))
     }
-    const ifFriends= (user) => {
+    const ifFriends = (user) => {
         // 判断是否是联系人
-      const list = currentUser?.linkList.map (item => item.username)
+        const list = currentUser?.linkList.map(item => item.username)
         return list?.includes(user?.username)
     }
-    const addFriends = (to,requestMessage) => {
+    const addFriends = (to, requestMessage) => {
         // console.log(to)
         // console.log(requestMessage)
-       axios.post(requestFriend,{to,requestMessage}).then(r => {
-           message.success("好友申请发送成功！")
-           socket.current.emit("addFriends",{notice:to})
-       }).catch(e => console.log(e))
+        axios.post(requestFriend, {to, requestMessage}).then(r => {
+            message.success("好友申请发送成功！")
+            socket.current.emit("addFriends", {notice: to})
+        }).catch(e => console.log(e))
     }
-    const handleRequest = (type,currentUsername,requestId,requestUsername) => {
+    const handleRequest = (type, currentUsername, requestId, requestUsername) => {
         // console.log(type,currentUsername,requestId,requestUsername)
-        axios.post(handleFriendsRequest,{type,currentUsername,requestId,requestUsername}).then(r => {
+        axios.post(handleFriendsRequest, {type, currentUsername, requestId, requestUsername}).then(r => {
             // console.log(r.data.userDetail)
-            localStorage.setItem("chat-app-user",JSON.stringify(r.data.userDetail));
+            localStorage.setItem("chat-app-user", JSON.stringify(r.data.userDetail));
             setCurrentUser(r.data.userDetail)
-            socket.current.emit("handleRequest",{notice:requestUsername})
+            socket.current.emit("handleRequest", {notice: requestUsername})
         }).catch(e => console.log(e))
     }
     return (
@@ -111,11 +111,11 @@ const Contacts = ({setIfNotice, ifNotice, contacts, currentUser, changeChat, set
                                         {
                                             searchUsers === undefined ? null : searchUsers.length === 0 ?
                                                 <>
-                                                    <div style={{fontSize: 50, color: "#00000052"}}><TeamOutlined /></div>
+                                                    <div style={{fontSize: 50, color: "#00000052"}}><TeamOutlined/></div>
                                                     <div style={{color: "#2c2121cc"}}>未找到相关用户</div>
                                                 </> : <>
                                                     {
-                                                        searchUsers.map((user,index) => {
+                                                        searchUsers.map((user, index) => {
                                                             return <Card
                                                                 key={index}
                                                                 style={{
@@ -136,7 +136,8 @@ const Contacts = ({setIfNotice, ifNotice, contacts, currentUser, changeChat, set
                                                                     justifyContent: "space-between",
                                                                 }}>
                                                                     <Meta
-                                                                        avatar={<Avatar src={`data:image/svg+xml;base64,${user.avatarImage}`}/>}
+                                                                        avatar={<Avatar
+                                                                            src={`data:image/svg+xml;base64,${user.avatarImage}`}/>}
                                                                         title={user.username}
                                                                         description={<div style={{
                                                                             display: "flex",
@@ -154,12 +155,21 @@ const Contacts = ({setIfNotice, ifNotice, contacts, currentUser, changeChat, set
                                                                                         p-id="6561"></path>
                                                                                 </svg>
                                                                             </div>
-                                                                            <div style={{overflow: "hidden", }}>{`:${user.email}`}</div>
+                                                                            <div
+                                                                                style={{overflow: "hidden",}}>{`:${user.email}`}</div>
                                                                         </div>}
                                                                         style={{width: "100%"}}
                                                                     />
                                                                     {
-                                                                       ! ifFriends(user) ?  <div onClick={() => addFriends(user.username,{username:currentUsername,message:"我想添加你为好友~",avatarImage: currentAvatarImage, state: 0})}><UserAddOutlined/></div> : <div onClick={() => chat(user.username)}><MessageOutlined /></div>
+                                                                        !ifFriends(user) ? <div
+                                                                                onClick={() => addFriends(user.username, {
+                                                                                    username: currentUsername,
+                                                                                    message: "我想添加你为好友~",
+                                                                                    avatarImage: currentAvatarImage,
+                                                                                    state: 0
+                                                                                })}><UserAddOutlined/></div> :
+                                                                            <div onClick={() => chat(user.username)}>
+                                                                                <MessageOutlined/></div>
                                                                     }
                                                                 </div>
                                                             </Card>
@@ -172,12 +182,12 @@ const Contacts = ({setIfNotice, ifNotice, contacts, currentUser, changeChat, set
 
                             }
                             {
-                                select === "message" &&
-                                <OpenContainer2>
-                                    <div className="head"><ArrowLeftOutlined onClick={() => setOpen(false)}/></div>
+                                select === "message" && <OpenContainer2>
+                                    <div className="head"><ArrowLeftOutlined onClick={() => setOpen(false)}/>
+                                    </div>
                                     <div className="requestList">
                                         {
-                                            currentUser?.friendsRequest?.sort((a,b) => a.state - b.state).map((request,index) => {
+                                            currentUser?.friendsRequest?.sort((a, b) => a.state - b.state).map((request, index) => {
                                                 return <Card
                                                     key={index}
                                                     style={{
@@ -189,13 +199,15 @@ const Contacts = ({setIfNotice, ifNotice, contacts, currentUser, changeChat, set
                                                         minWidth: 0
                                                     }}
                                                     actions={request.state === 0 ? [
-                                                            <div onClick={() => handleRequest(1, currentUsername, request._id, request.username)}>同意</div>,
-                                                            <div onClick={() => handleRequest(2, currentUsername, request._id, request.username)}>拒绝</div>
-                                                        ] : request.state === 1 ? [
-                                                            <div>已同意</div>
-                                                        ] : [
-                                                            <div>已拒绝</div>
-                                                        ]}
+                                                        <div
+                                                            onClick={() => handleRequest(1, currentUsername, request._id, request.username)}>同意</div>,
+                                                        <div
+                                                            onClick={() => handleRequest(2, currentUsername, request._id, request.username)}>拒绝</div>
+                                                    ] : request.state === 1 ? [
+                                                        <div>已同意</div>
+                                                    ] : [
+                                                        <div>已拒绝</div>
+                                                    ]}
                                                     // extra = {<div>add</div>}
                                                     size="small"
                                                     hoverable={true}
@@ -206,7 +218,8 @@ const Contacts = ({setIfNotice, ifNotice, contacts, currentUser, changeChat, set
                                                         justifyContent: "space-between",
                                                     }}>
                                                         <Meta
-                                                            avatar={<Avatar src={`data:image/svg+xml;base64,${request.avatarImage}`}/>}
+                                                            avatar={<Avatar
+                                                                src={`data:image/svg+xml;base64,${request.avatarImage}`}/>}
                                                             title={request.username}
                                                             description={request.message}
                                                             style={{width: "100%"}}
@@ -218,7 +231,40 @@ const Contacts = ({setIfNotice, ifNotice, contacts, currentUser, changeChat, set
                                                 </Card>
                                             })
                                         }
+                                        {
+                                            currentUser?.friendsRequest.length === 0 && <Card
+                                                style={{
+                                                    width: "100%",
+                                                    // marginTop: 16,
+                                                    // height: 100
+                                                    // backgroundColor: "#9A9A9A",
+                                                    // flexShrink: 1,
+                                                    overflow: "hidden",
+                                                    minWidth: 0,
+                                                    backgroundColor: "gray",
+                                                    border: "none",
+                                                    display: "flex",
+                                                    // justifyContent: "flex-start"
+
+                                                }}
+                                                // extra = {<div>add</div>}
+                                                size="small"
+                                            >
+                                                <div style={{
+                                                    width: "100%",
+                                                    display: "flex",
+                                                    justifyContent: "center",
+                                                    // flexShrink:0
+                                                }}>
+                                                        <div className="no-message">
+                                                            <div><svg t="1702457836280" className="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="5844" width="60" height="60"><path d="M475.829476 1024C551.912302 1024 611.780755 962.884287 611.780755 888.048721H339.878197c0 74.835566 61.115713 135.951279 135.951279 135.951279zM772.677223 140.940317c-102.275274 0-184.594397 63.610231-184.594397 143.434835 0 78.577345 82.319123 143.434836 184.594397 143.434836 102.275274 0 184.594397-63.610231 184.594397-143.434836s-82.319123-143.434836-184.594397-143.434835z m-87.308161 167.132765c-13.719854 0-23.697929-11.225335-23.697929-23.69793 0-13.719854 11.225335-23.697929 23.697929-23.697929 13.719854 0 23.697929 11.225335 23.697929 23.697929 1.247259 13.719854-9.978076 23.697929-23.697929 23.69793z m87.308161 0c-13.719854 0-23.697929-11.225335-23.697929-23.69793 0-13.719854 11.225335-23.697929 23.697929-23.697929s23.697929 11.225335 23.697929 23.697929c0 13.719854-9.978076 23.697929-23.697929 23.69793z m86.060901 0c-13.719854 0-23.697929-11.225335-23.697929-23.69793 0-13.719854 11.225335-23.697929 23.697929-23.697929s23.697929 11.225335 23.69793 23.697929c1.247259 13.719854-9.978076 23.697929-23.69793 23.69793z" fill="#E5E5E7" p-id="5845"></path><path d="M838.781973 750.850183c-44.90134 0-44.90134-180.852619-44.90134-180.852619V462.733252c-6.236297 0-13.719854 1.247259-19.956151 1.24726-122.231425 0-222.01218-81.071864-222.01218-180.852619 0-57.373934 33.676005-108.511571 86.060901-142.187576-22.45067-14.967113-46.148599-26.192448-72.341047-34.923265 1.247259-4.989038 1.247259-9.978076 1.247259-14.967113 0-49.890378-41.159562-91.049939-91.049939-91.049939s-91.049939 41.159562-91.049939 91.049939c0 4.989038 0 9.978076 1.24726 14.967113-125.973203 43.65408-228.248477 178.3581-228.248478 336.760049v124.725944s0 180.852619-43.65408 182.099878c-26.192448 0-46.148599 19.956151-46.1486 44.90134S87.93179 839.405603 112.876979 839.405603h725.904994c24.945189 0 44.90134-19.956151 44.90134-44.90134 1.247259-22.45067-19.956151-43.65408-44.90134-43.65408z m-361.705237-619.887942c-19.956151 0-37.417783-16.214373-37.417784-37.417783 0-19.956151 16.214373-37.417783 37.417784-37.417783 19.956151 0 37.417783 16.214373 37.417783 37.417783-1.247259 21.20341-17.461632 37.417783-37.417783 37.417783z" fill="#E5E5E7" p-id="5846"></path></svg></div>
+                                                            <div>暂无通知</div>
+                                                        </div>
+                                                </div>
+                                            </Card>
+                                        }
                                     </div>
+
                                 </OpenContainer2>
                             }
                         </> : <Container>
@@ -297,7 +343,7 @@ const Container = styled.div`
     justify-content: center;
     //min-width: 200px;
     //border-bottom: 1px solid #9A9A9A;
-    box-shadow: 0 0 5px rgb(0,0,0,0.5);
+    box-shadow: 0 0 5px rgb(0, 0, 0, 0.5);
     @media screen  and (max-width: 1500px) {
       gap: 0.5rem;
     }
@@ -336,9 +382,11 @@ const Container = styled.div`
     //gap: 0.8rem;
     gap: 6px;
     padding: 8px 0 10px 0;
+
     &::-webkit-scrollbar {
       //width: 0.2rem;
       width: 0;
+
       &-thumb {
         background-color: #ffffff39;
         width: 0.1rem;
@@ -347,7 +395,7 @@ const Container = styled.div`
     }
 
     .contact {
-      background-color: rgb(230,206,206,0.09);
+      background-color: rgb(230, 206, 206, 0.09);
       min-height: 4rem;
       cursor: pointer;
       width: 88%;
@@ -357,9 +405,11 @@ const Container = styled.div`
       gap: 1rem;
       align-items: center;
       transition: 0.5s ease-in-out;
+
       &:hover {
         background-color: #ffffff34;
       }
+
       .avatar {
         img {
           height: 3rem;
@@ -375,8 +425,8 @@ const Container = styled.div`
 
     .selected {
       //background-color: #ffffff34;
-      background-color: rgb(154,154,154);
- 
+      background-color: rgb(154, 154, 154);
+
     }
   }
 
@@ -415,7 +465,7 @@ const OpenContainer = styled.div`
   background-color: gray;
   display: grid;
   grid-template-rows: 10% 90%;
-  overflow: hidden;
+  overflow: auto;
 
   .ant-btn {
     height: 31.33px;
@@ -433,6 +483,7 @@ const OpenContainer = styled.div`
 
     }
   }
+
   .userList {
     //background-color: red;
     display: flex;
@@ -446,20 +497,47 @@ const OpenContainer = styled.div`
 const OpenContainer2 = styled.div`
   background-color: gray;
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   gap: 10px;
+  overflow: auto;
   .head {
     color: white;
     margin-top: 20px;
     margin-left: 10px;
   }
+
   .requestList {
     margin-top: 20px;
     flex: 1;
+    display: flex;  
+    flex-direction: column;
+    gap: 10px;
+    overflow: auto;
+    margin-bottom: 20px;
+    .ant-card.ant-card-bordered.ant-card-hoverable.ant-card-small.css-dev-only-do-not-override-6j9yrn {
+     flex-shrink: 0; 
+    }
+    &::-webkit-scrollbar {
+      //width: 0.2rem;
+      width: 1px;
+
+      &-thumb {
+        background-color: #FFFAFA;
+        width: 0.1rem;
+        border-radius: 1rem;
+      }
+    }
+  } 
+
+  .no-message {
     display: flex;
     flex-direction: column;
     gap: 10px;
-    overflow: hidden;
+    align-items: center;
+    margin-left: 30px;
+    @media screen and (min-width: 1400px ) {
+      margin-left: 3.1vw;
+    }
   }
 
 `

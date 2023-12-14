@@ -3,9 +3,10 @@ import styled from "styled-components";
 import Logout from "./Logout";
 import ChatInput from "./ChatInput";
 import axios from "axios";
-import { getAllMessage, sendMessagesRoute } from "../utils/ApIRouters";
+import {deleteUser, getAllMessage, sendMessagesRoute} from "../utils/ApIRouters";
 import {DeleteOutlined} from "@ant-design/icons";
-const ChatContainer = ({ currentChat, currentUser, socket }) => {
+import {message, Popconfirm} from "antd";
+const ChatContainer = ({ currentChat, currentUser, socket, setCurrentUser,setCurrentChat }) => {
   const [allMessages, setAllMessages] = useState([]);
   const scrollRef = useRef();
   const handleSendMsg = async (msg) => {
@@ -60,6 +61,18 @@ const ChatContainer = ({ currentChat, currentUser, socket }) => {
     }
     // console.log("88")
   }, [currentChat, allMessages,socket]);
+  const confirm = (e) => {
+    console.log(e);
+    console.log(currentUser.username,currentChat.username)
+    axios.post(deleteUser,{currentUser:currentUser.username,currentChat:currentChat.username}).then(r => {
+      console.log(r.data.userDetail)
+      setCurrentUser(r.data.userDetail)
+      localStorage.setItem("chat-app-user", JSON.stringify(r.data.userDetail));
+      message.success('删除成功');
+      socket.current.emit("deleteUser",{notice:currentChat.username,other:currentUser.username})
+      setCurrentChat(undefined)
+    })
+  };
   return (
     <>
       <Container>
@@ -76,7 +89,18 @@ const ChatContainer = ({ currentChat, currentUser, socket }) => {
             </div>
           </div>
           <div className="action-button">
-            <div className="delete-chat"><DeleteOutlined /></div>
+
+              <Popconfirm
+                  title="提醒"
+                  description="你确定要删除该联系人？"
+                  onConfirm={confirm}
+                  // onCancel={cancel}
+                  okText="确定"
+                  cancelText="取消"
+              ><div className="delete-chat">
+                <DeleteOutlined />
+              </div>
+              </Popconfirm>
             <div className="logout-chat"><Logout /></div>
           </div>
         </div>

@@ -137,12 +137,12 @@ module.exports.searchUser = async (req, res, next) => {
 module.exports.requestFriend = async (req, res, next) => {
     try {
         const {to, requestMessage} = req.body
-            const result = await UserModel.updateOne({username: to}, {$pull: {friendsRequest: requestMessage}}).then(async (data, err) => {
+        const result = await UserModel.updateOne({username: to}, {$pull: {friendsRequest: requestMessage}}).then(async (data, err) => {
             if (err) {
                 console.log(err)
             }
 
-            await  UserModel.updateOne({username: to}, {$push: {friendsRequest: requestMessage}}).then((data,err) => {
+            await UserModel.updateOne({username: to}, {$push: {friendsRequest: requestMessage}}).then((data, err) => {
                 if (err) {
                     console.log(err)
                 }
@@ -158,8 +158,8 @@ module.exports.requestFriend = async (req, res, next) => {
 }
 module.exports.handleFriendsRequest = async (req, res, next) => {
     try {
-        const {type, currentUsername, requestId,requestUsername} = req.body
-        console.log(type, currentUsername, requestId,requestUsername)
+        const {type, currentUsername, requestId, requestUsername} = req.body
+        console.log(type, currentUsername, requestId, requestUsername)
         const result = await UserModel.updateOne(
             {
                 username: currentUsername,
@@ -172,28 +172,54 @@ module.exports.handleFriendsRequest = async (req, res, next) => {
             if (err) {
                 console.log(err)
             }
-            if ( type === 1) {
-              const user1 =  await UserModel.findOne({username:currentUsername})
-              const user2 =  await UserModel.findOne({username:requestUsername})
-                console.log(user1,user2)
-                await UserModel.updateOne({username: currentUsername},{$push: {linkList:user2}}).then((data,err) => {
+            if (type === 1) {
+                const user1 = await UserModel.findOne({username: currentUsername})
+                const user2 = await UserModel.findOne({username: requestUsername})
+                console.log(user1, user2)
+                await UserModel.updateOne({username: currentUsername}, {$push: {linkList: user2}}).then((data, err) => {
                     if (err) {
                         console.log(err)
                     }
 
                 })
-                await UserModel.updateOne({username: requestUsername},{$push: {linkList:user1}}).then((data,err) => {
+                await UserModel.updateOne({username: requestUsername}, {$push: {linkList: user1}}).then((data, err) => {
                     if (err) {
                         console.log(err)
                     }
                 })
             }
             // 此处需要转发告诉在线的用户 假如他在线 更新他的好友列表
-            const userDetail =  await UserModel.findOne({username:currentUsername})
+            const userDetail = await UserModel.findOne({username: currentUsername})
             res.json({
                 userDetail
             })
 
+        })
+    } catch (e) {
+        next(e)
+    }
+}
+module.exports.deleteUser = async (req, res, next) => {
+    try {
+        const {currentUser, currentChat} = req.body
+        console.log(currentUser, currentChat)
+        await UserModel.updateOne({username: currentUser},{$pull: {linkList: {username: currentChat}}}).then(async (data,err) => {
+            if (err) {
+                console.log(err)
+            }
+            await UserModel.updateOne({username: currentChat},{$pull:{linkList: {username:currentUser}}}).then((data,err) => {
+                if (err) {
+                    console.log(err)
+                }
+            })
+            await UserModel.findOne({username: currentUser}).then((data,err) => {
+                if (err) {
+                    console.log(err)
+                }
+                res.json({
+                    userDetail: data
+                })
+            })
         })
     } catch (e) {
         next(e)

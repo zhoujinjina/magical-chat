@@ -9,3 +9,4 @@ export const searchUser=`${host}/api/auth/searchUser`
 export const requestFriend=`${host}/api/auth/requestFriend`
 export const handleFriendsRequest=`${host}/api/auth/handleFriendsRequest`
 export const getUserDetail=`${host}/api/auth/getUserDetail`
+export const deleteUser=`${host}/api/auth/deleteUser`

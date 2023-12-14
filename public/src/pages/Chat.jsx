@@ -7,6 +7,7 @@ import Contacts from "../components/Contacts";
 import Welecome from "../components/Welecome";
 import ChatContainer from "../components/ChatContainer";
 import { io } from "socket.io-client";
+import {message} from "antd";
 const Chat = () => {
   const socket = useRef()
   const navigate = useNavigate();
@@ -40,6 +41,14 @@ const Chat = () => {
         axios.post(getUserDetail,{user: currentUser.username}).then(r => {
           setCurrentUser(r.data)
           localStorage.setItem("chat-app-user",JSON.stringify(r.data));
+        })
+      })
+      socket.current.on("deleteUser", (data) => {
+        console.log(data)
+        axios.post(getUserDetail,{user: currentUser.username}).then(r => {
+          setCurrentUser(r.data)
+          localStorage.setItem("chat-app-user",JSON.stringify(r.data));
+          message.warning(`您被${data.other}删除了`)
         })
       })
     }
@@ -83,6 +92,8 @@ const Chat = () => {
               currentUser={currentUser}
               currentChat={currentChat}
               socket={socket}
+              setCurrentUser={setCurrentUser}
+              setCurrentChat={setCurrentChat}
             />
           )}
         </div>
@@ -114,8 +125,8 @@ const Container = styled.div`
     @media screen and (max-width: 800px) {
       grid-template-columns: 33% 67%;
     }
-    // @media screen and (max-width: 740px) {
-    //  grid-template-columns: 45% 55%;
-    //}
+     @media screen and (min-width: 1340px) {
+      grid-template-columns: 20% 80%;
+    }
   }
 `;
